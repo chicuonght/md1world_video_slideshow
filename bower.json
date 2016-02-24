@@ -1,0 +1,33 @@
+{
+  "name": "ngVideo",
+  "version": "0.0.2",
+  "homepage": "md1world.com",
+  "authors": [
+    "chicuonght <chicuonght@gmail.com>"
+  ],
+  "description": "AngularJS Video Gallery Directive",
+  "main": [
+    "src/js/ngVideo.js", 
+    "src/css/ngVideo.css"
+  ],
+  "keywords": [
+    "AngularJS",
+    "Photo",
+    "Video",
+    "ngVideo",
+    "Directive"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "index.html",
+    "videos"
+  ],
+  "dependencies": {
+    "angular": "~1.4.0"
+  }
+}
