@@ -1,16 +1,16 @@
 (function () {
 	'use-strict';
 
-	angular.module('md1world.gallery', []).directive('ngGallery', ngGallery);
+	angular.module('md1world.video', []).directive('ngMd1Video', ngMd1Video);
 
-	ngGallery.$inject = ['$document', '$timeout', '$q', '$templateCache'];
+	ngMd1Video.$inject = ['$document', '$timeout', '$q', '$templateCache'];
 
-	function ngGallery( $document, $timeout, $q, $templateCache ) {
+	function ngMd1Video( $document, $timeout, $q, $templateCache ) {
 
 		var defaults = {
-			baseClass: 'ng-gallery',
-			thumbClass: 'ng-thumb',
-			templateUrl: 'ng-gallery.html'
+			baseClass: 'ng-md1-video',
+			thumbClass: 'ng-thumb-video',
+			templateUrl: 'ng-md1-video.html'
 		};
 
 		var keys_codes = {
@@ -30,24 +30,26 @@
 		// Set the default template
 		$templateCache.put(template_url,
 			'<div class="{{ baseClass }}">' +
-			'  <div ng-repeat="i in images">' +
-			'    <img ng-src="{{ i[config.thumb] }}" class="{{ thumbClass }}" ng-click="openGallery($index)" alt="Image {{ $index + 1 }}" />' +
+			'  <div ng-repeat="i in videos">' +
+			'    <img ng-src="" class="{{ thumbClass }}" ng-click="openVideo($index)" alt="Video {{ $index + 1 }}" />' +
 			'  </div>' +
 			'</div>' +
 			'<div class="ng-overlay" ng-show="opened">' +
 			'</div>' +
-			'<div class="ng-gallery-content" unselectable="on" ng-show="opened" ng-swipe-left="nextImage()" ng-swipe-right="prevImage()">' +
+			'<div class="ng-md1-video-content" unselectable="on" ng-show="opened" ng-swipe-left="nextVideo()" ng-swipe-right="prevVideo()">' +
 			'  <div class="uil-ring-css" ng-show="loading"><div></div></div>' +
-			'<a href="{{getImageDownloadSrc()}}" target="_blank" ng-show="showImageDownloadButton()" class="download-image"><i class="fa fa-download"></i></a>' +
+			'<a href="{{getVideoDownloadSrc()}}" target="_blank" ng-show="showVideoDownloadButton()" class="download-video"><i class="fa fa-download"></i></a>' +
 			'  <a class="close-popup" ng-click="closeGallery()"><i class="fa fa-close"></i></a>' +
-			'  <a class="nav-left" ng-click="prevImage()"><i class="fa fa-angle-left"></i></a>' +
-			'  <img ondragstart="return false;" draggable="false" ng-src="{{ img }}" ng-click="nextImage()" ng-show="!loading" class="effect" />' +
-			'  <a class="nav-right" ng-click="nextImage()"><i class="fa fa-angle-right"></i></a>' +
-			'  <span class="info-text">{{ index + 1 }}/{{ images.length }} - {{ description }}</span>' +
+			'  <a class="nav-left" ng-click="prevVideo()"><i class="fa fa-angle-left"></i></a>' +
+			'  <video ng-if="url" ondragstart="return false;" draggable="false" class="videoPlayer" preload="metadata" vg-poster="data.poster" > ' +
+			' <source ng-src="url" type="video/mp4">' +
+			'</video>' +
+			'  <a class="nav-right" ng-click="nextVideo()"><i class="fa fa-angle-right"></i></a>' +
+			'  <span class="info-text">{{ index + 1 }}/{{ videos.length }} - {{ description }}</span>' +
 			'  <div class="ng-thumbnails-wrapper">' +
 			'    <div class="ng-thumbnails slide-left">' +
-			'      <div ng-repeat="i in images">' +
-			'        <img ng-src="{{ i[config.thumb] }}" ng-class="{\'active\': index === $index}" ng-click="changeImage($index)" />' +
+			'      <div ng-repeat="i in videos">' +
+			'        <img ng-src="{{ i[config.thumb] }}" ng-class="{\'active\': index === $index}" ng-click="changeVideo($index)" />' +
 			'      </div>' +
 			'    </div>' +
 			'  </div>' +
@@ -57,7 +59,7 @@
 		return {
 			restrict: 'EA',
 			scope: {
-				images: '=',
+				videos: '=',
 				thumbsNum: '@',
 				config:'='
 			},
@@ -80,71 +82,72 @@
 
 				scope.thumb_wrapper_width = 0;
 				scope.thumbs_width = 0;
+				/*
+				 var loadVideo = function (i) {
+				 var deferred = $q.defer();
+				 var video = {};
 
-				var loadImage = function (i) {
-					var deferred = $q.defer();
-					var image = new Image();
+				 video.onload = function () {
+				 console.log('onload');
+				 scope.loading = false;
+				 if (typeof this.complete === false || this.naturalWidth === 0) {
+				 deferred.reject();
+				 }
+				 deferred.resolve(video);
+				 };
 
-					image.onload = function () {
-						scope.loading = false;
-						if (typeof this.complete === false || this.naturalWidth === 0) {
-							deferred.reject();
-						}
-						deferred.resolve(image);
-					};
+				 video.onerror = function () {
+				 deferred.reject();
+				 };
 
-					image.onerror = function () {
-						deferred.reject();
-					};
+				 video.url = scope.videos[i][scope.config.url]
+				 scope.loading = true;
 
-					image.src = scope.images[i][scope.config.img];
-					scope.loading = true;
-
-					return deferred.promise;
-				};
-
-				var showImage = function (i) {
-					loadImage(scope.index).then(function (resp) {
-						scope.img = resp.src;
+				 return deferred.promise;
+				 };
+				 */
+				var showVideo = function (i) {
+					loadVideo(scope.index).then(function (resp) {
+						scope.url = resp.url;
 						smartScroll(scope.index);
 					});
-					scope.description = scope.images[i].description || '';
+					scope.description = scope.videos[i].description || '';
 				};
 
-				scope.showImageDownloadButton = function () {
-					var image = scope.images[scope.index];
-					return angular.isDefined(image.downloadSrc) && 0 < image.downloadSrc.length;
+				scope.showVideoDownloadButton = function () {
+					var video = scope.videos[scope.index];
+					return angular.isDefined(video.downloadSrc) && 0 < video.downloadSrc.length;
 				};
 
-				scope.getImageDownloadSrc = function () {
-					return scope.images[scope.index].downloadSrc;
+				scope.getVideoDownloadSrc = function () {
+					return scope.videos[scope.index].downloadSrc;
 				};
 
-				scope.changeImage = function (i) {
+				scope.changeVideo = function (i) {
 					scope.index = i;
-					showImage(i);
+					showVideo(i);
 				};
 
-				scope.nextImage = function () {
+				scope.nextVideo = function () {
 					scope.index += 1;
-					if (scope.index === scope.images.length) {
+					if (scope.index === scope.videos.length) {
 						scope.index = 0;
 					}
-					showImage(scope.index);
+					showVideo(scope.index);
 				};
 
-				scope.prevImage = function () {
+				scope.prevVideo = function () {
 					scope.index -= 1;
 					if (scope.index < 0) {
-						scope.index = scope.images.length - 1;
+						scope.index = scope.videos.length - 1;
 					}
-					showImage(scope.index);
+					showVideo(scope.index);
 				};
 
-				scope.openGallery = function (i) {
+				scope.openVideo = function (i) {
 					if (typeof i !== undefined) {
 						scope.index = i;
-						showImage(scope.index);
+						showVideo(scope.index);
 					}
 					scope.opened = true;
 
@@ -169,9 +172,9 @@
 					if (which === keys_codes.esc) {
 						scope.closeGallery();
 					} else if (which === keys_codes.right || which === keys_codes.enter) {
-						scope.nextImage();
+						scope.nextVideo();
 					} else if (which === keys_codes.left) {
-						scope.prevImage();
+						scope.prevVideo();
 					}
 
 					scope.$apply();
@@ -180,7 +183,7 @@
 				var calculateThumbsWidth = function () {
 					var width = 0,
 						visible_width = 0;
-					angular.forEach($thumbnails.find('img'), function (thumb) {
+					angular.forEach($thumbnails.find('url'), function (thumb) {
 						width += thumb.clientWidth;
 						width += 10; // margin-right
 						visible_width = thumb.clientWidth + 10;
@@ -193,7 +196,7 @@
 
 				var smartScroll = function (index) {
 					$timeout(function () {
-						var len = scope.images.length,
+						var len = scope.videos.length,
 							width = scope.thumbs_width,
 							current_scroll = $thumbwrapper[0].scrollLeft,
 							item_scroll = parseInt(width / len, 10),
